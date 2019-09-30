@@ -1,1 +1,0 @@
-../../../EasyShowView/EasyShowView/EasyTextGlobalConfig.h

@@ -1,2 +1,0 @@
-EZOpenSDK-iOS
-====

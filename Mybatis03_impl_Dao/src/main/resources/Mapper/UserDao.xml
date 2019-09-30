@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--Mybatis的映射文件-->
+<mapper namespace="com.sanciyuan.Dao.UserDao">
+
+    <!--配置查询结果的列名和实体类的属性名的对应关系-->
+    <!--第二种方法：别名的属性配置-->
+<!--    <resultMap id="userMap" type="com.sanciyuan.Entity.User">-->
+<!--        &lt;!&ndash;主键字段的对应&ndash;&gt;-->
+<!--        <id property="userid" column="id"></id>-->
+<!--        &lt;!&ndash;非主键的对应的字段&ndash;&gt;-->
+<!--        <result property="username" column="username"></result>-->
+<!--        <result property="userAddress" column="address"></result>-->
+<!--        <result property="userSex" column="sex"></result>-->
+<!--        <result property="userBirthday" column="birthday"></result>-->
+<!--    </resultMap>-->
+
+    <!--查询所有用户-->
+    <select id="findAll" resultMap="userMap">/*第一种方法：别名：sql名称 as 实体类名称*/
+<!--         select id,username,birthday,sex,address from user;-->
+        select * from user;
+    </select>
+
+    <!--保存用户(添加用户)-->
+    <insert id="saveUser" parameterType="com.sanciyuan.Entity.User">/*#{任意内容}*/
+        insert user(username,birthday,sex,address) values(#{username},#{birthday},#{sex},#{address})
+    </insert>
+
+    <!--更新指定用户-->
+    <update id="updateUser" parameterType="com.sanciyuan.Entity.User">
+        update user set username=#{username},address=#{address},sex=#{sex},birthday=#{birthday} where id=#{id}
+    </update>
+
+    <!--删除指定用户-->
+    <delete id="deleteUser" parameterType="int">
+        delete from user where id=#{uid}
+    </delete>
+
+    <!--根据id查询指定用户-->
+    <select id="UsernameByid" parameterType="int" resultType="com.sanciyuan.Entity.User">
+        select * from user where id=#{uid}
+    </select>
+
+<!--    根据用户名进行模糊查询-->
+    <select id="Usernamebydim" parameterType="String" resultType="com.sanciyuan.Entity.User">
+        <!--select * from user where username like #{name}-->
+        select * from user where username like '%${value}%'
+    </select>
+
+    <!--获取员工的总记录数-->
+    <select id="findTotal" resultType="Integer">
+        select count(id) from user;
+    </select>
+
+    <!--根据queryVo的条件查询用户-->
+    <select id="findUserByVo" parameterType="com.sanciyuan.Entity.QueryVo" resultType="com.sanciyuan.Entity.User">
+        select * from user where username like #{user.username}
+    </select>
+
+</mapper>

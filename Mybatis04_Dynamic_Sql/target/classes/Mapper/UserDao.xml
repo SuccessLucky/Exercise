@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--Mybatis的映射文件-->
+<mapper namespace="com.sanciyuan.Dao.UserDao">
+
+    <!--配置查询结果的列名和实体类的属性名的对应关系-->
+    <!--第二种方法：别名的属性配置-->
+    <resultMap id="userMap" type="com.sanciyuan.Entity.User">
+        <!--主键字段的对应-->
+        <id property="userid" column="id"></id>
+        <!--非主键的对应的字段-->
+        <result property="username" column="username"></result>
+        <!--property对应的是实体类的字段,column对应的Sql中的字段-->
+        <result property="address" column="address"></result>
+        <result property="sex" column="sex"></result>
+        <result property="birthday" column="birthday"></result>
+    </resultMap>
+
+    <!--抽取重复的Sql语句-->
+    <sql id="defaultuser" >
+        select * from user;
+    </sql>
+
+    <!--查询所有用户-->
+    <select id="findAll" resultType="com.sanciyuan.Entity.User">/*第一种方法：别名：sql名称 as 实体类名称*/
+        <!--         select id,username,birthday,sex,address from user;-->
+        <include refid="defaultuser"></include>
+    </select>
+
+    <!--保存用户(添加用户)-->
+    <insert id="saveUser" parameterType="com.sanciyuan.Entity.User">
+        <!--MySql中新增用户的返回值的配置（keyProperty的属性名对应实体类,keyColumn的属性对应数据库表的,resultType的返回类型,order执行的顺序）-->
+        <selectKey keyProperty="id" keyColumn="id" resultType="int" order="AFTER">
+            <!--固定写法-->
+            select last_insert_id();
+        </selectKey>
+        insert user(username,birthday,sex,address) values(#{username},#{birthday},#{sex},#{address})
+    </insert>
+
+    <!--更新指定用户-->
+    <update id="updateUser" parameterType="com.sanciyuan.Entity.User">
+        update user set username=#{username},address=#{address},sex=#{sex},birthday=#{birthday} where id=#{id}
+    </update>
+
+    <!--删除指定用户-->
+    <delete id="deleteUser" parameterType="int">
+        delete from user where id=#{uid}
+    </delete>
+
+    <!--根据id查询指定用户-->
+    <select id="UsernameByid" parameterType="int" resultMap="userMap">
+        select * from user where id=#{uid}
+    </select>
+
+    <!--    根据用户名进行模糊查询-->
+    <select id="Usernamebydim" parameterType="String" resultType="user">
+        <!--select * from user where username like #{name}-->
+        select * from user where username like '%${value}%'
+    </select>
+
+    <!--获取员工的总记录数-->
+    <select id="findTotal" resultType="Integer">
+        select count(id) from user;
+    </select>
+
+    <!--根据queryVo的条件查询用户-->
+    <select id="findUserByVo" parameterType="com.sanciyuan.Entity.QueryVo" resultType="com.sanciyuan.Entity.User">
+        <!--user只是其中的一个属性-->
+        select * from user where username like #{user.username}
+    </select>
+
+    <!--根据User的任意类型进行查询
+    <select id="findUserByCondition" parameterType="user" resultMap="userMap">
+        select * from user where 1=1
+        <if test="username !=null">
+           and username=#{username}
+        </if>
+        <if test="sex !=null">
+            and sex=#{sex}
+        </if>
+    </select>
+    -->
+    <!--这里使用where标签进行多条件查询-->
+    <select id="findUserByCondition" parameterType="user" resultMap="userMap">
+        select * from user
+        <where>
+            <if test="username !=null">
+                and username=#{username}
+            </if>
+            <if test="sex !=null">
+                and sex=#{sex}
+            </if>
+        </where>
+    </select>
+
+    <!--根据queryvo中的Id集合实现查询用户列表-->
+    <select id="findUserInIds" resultMap="userMap" parameterType="queryvo">
+        select * from user
+        <where>
+            <if test="ids !=null and ids.size()>0">
+                <foreach collection="ids" open="and id in (" close=")" item="id" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--Mybatis的映射文件-->
+<mapper namespace="com.sanciyuan.Dao.RoleDao">
+
+    <resultMap id="roleMap" type="role">
+        <id property="roleId" column="id"></id>
+        <result property="roleName" column="role_name"></result>
+        <result property="roleDesc" column="role_desc"></result>
+        <!--配置user实体类的别名属性(collection标签中的property的属性值为role实体类中的对象名称,oftype的值为实体类别名)-->
+        <collection property="users" ofType="user">
+            <id property="id" column="id"></id>
+            <result property="username" column="username"></result>
+            <result property="address" column="address"></result>
+            <result property="sex" column="sex"></result>
+            <result property="birthday" column="birthday"></result>
+        </collection>
+    </resultMap>
+
+    <select id="findAll" resultMap="roleMap">
+    select u.*,r.id as rid,r.role_name,r.role_desc from role r
+    left outer join user_role ur on r.id=ur.rid
+    left outer join user u on u.id=ur.uid;
+    </select>
+
+</mapper>

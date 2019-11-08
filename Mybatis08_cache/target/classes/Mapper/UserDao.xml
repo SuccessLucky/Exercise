@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--Mybatis的映射文件-->
+<mapper namespace="com.sanciyuan.Dao.UserDao">
+    <!--开启user支持二级缓存-->
+    <cache></cache>
+
+    <!--抽取重复的Sql语句(给重复的sql语句封装)-->
+    <sql id="defaultuser" >
+        select * from user;
+    </sql>
+
+    <!--查询所有用户-->
+    <select id="findAll" resultType="user">/*第一种方法：别名：sql名称 as 实体类名称*/
+        <!--         select id,username,birthday,sex,address from user;-->
+        select * from user
+    </select>
+
+    <!--根据id查询指定用户--><!--userCache=true在此处使用二级缓存-->
+    <select id="UsernameByid" parameterType="int" resultType="user" useCache="true">
+        select * from user where id=#{uid}
+    </select>
+
+    <!--跟新用户信息-->
+    <update id="updateUser" parameterType="user" >
+        update user set username=#{username},address=#{address} where id=#{id};
+    </update>
+
+
+</mapper>
